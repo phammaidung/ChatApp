@@ -20,11 +20,14 @@ class AuthScreen extends StatefulWidget {
 class _AuthScreenState extends State<AuthScreen> {
   final _formKey = GlobalKey<FormState>();
   var _isLogin = true;
+
   var _enteredEmail = '';
   var _enteredPassword = '';
-  File? _selectedImage;
-  var _isAuthenticating = false;
   var _enteredUsername = '';
+  File? _selectedImage;
+
+  var _isAuthenticating = false;
+  var _isVisiblePassword = true;
 
   void _submit() async {
     final isValid = _formKey.currentState!.validate();
@@ -58,6 +61,7 @@ class _AuthScreenState extends State<AuthScreen> {
             .collection('users')
             .doc(userCredentials.user!.uid)
             .set({
+          'userId': userCredentials.user!.uid,
           'username': _enteredUsername,
           'email': _enteredEmail,
           'image_url': imageUrl,
@@ -143,19 +147,36 @@ class _AuthScreenState extends State<AuthScreen> {
                                   _enteredUsername = value!;
                                 },
                               ),
-                            TextFormField(
-                              decoration:
-                                  const InputDecoration(labelText: 'Password'),
-                              obscureText: true,
-                              validator: (value) {
-                                if (value == null || value.trim().length < 6) {
-                                  return 'Password must be at least 6 characters long.';
-                                }
-                                return null;
-                              },
-                              onSaved: (value) {
-                                _enteredPassword = value!;
-                              },
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextFormField(
+                                    decoration: const InputDecoration(
+                                        labelText: 'Password'),
+                                    obscureText: _isVisiblePassword,
+                                    validator: (value) {
+                                      if (value == null ||
+                                          value.trim().length < 6) {
+                                        return 'Password must be at least 6 characters long.';
+                                      }
+                                      return null;
+                                    },
+                                    onSaved: (value) {
+                                      _enteredPassword = value!;
+                                    },
+                                  ),
+                                ),
+                                IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _isVisiblePassword =
+                                            !_isVisiblePassword;
+                                      });
+                                    },
+                                    icon: Icon(_isVisiblePassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility))
+                              ],
                             ),
                             const SizedBox(
                               height: 14,
