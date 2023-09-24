@@ -1,9 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class NewMessages extends StatefulWidget {
-  const NewMessages({super.key});
+  const NewMessages({super.key, required this.friendId, required this.roomId});
+
+  final String friendId;
+  final String roomId;
 
   @override
   State<NewMessages> createState() {
@@ -13,6 +17,11 @@ class NewMessages extends StatefulWidget {
 
 class _NewMessagesState extends State<NewMessages> {
   final _messageController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
@@ -34,13 +43,39 @@ class _NewMessagesState extends State<NewMessages> {
         .doc(user.uid)
         .get();
 
-    FirebaseFirestore.instance.collection('chat').add({
-      'text': enteredMessage,
-      'createdAt': Timestamp.now(),
+    final roomIdExist = await FirebaseFirestore.instance
+        .collection('chat_room')
+        .doc(widget.roomId)
+        .get();
+
+    final usersMessage = await FirebaseFirestore.instance
+        .collection('chat_room')
+        .doc(widget.roomId)
+        .collection('chat')
+        .add({
+      'roomId': roomIdExist.data()?['roomId'] ?? widget.roomId,
       'userId': user.uid,
+      'createdAt': Timestamp.now(),
       'username': userData.data()!['username'],
       'userImage': userData.data()!['image_url'],
+      'message': enteredMessage
     });
+
+    if (widget.roomId == roomIdExist.data()?['roomId']) {
+      FirebaseFirestore.instance
+          .collection('chat_room')
+          .doc(widget.roomId)
+          .update({'last_message': usersMessage});
+    } else {
+      FirebaseFirestore.instance
+          .collection('chat_room')
+          .doc(widget.roomId)
+          .set({
+        'roomId': widget.roomId,
+        'members': {user.uid, widget.friendId},
+        'last_message': usersMessage
+      });
+    }
 
     _messageController.clear();
   }

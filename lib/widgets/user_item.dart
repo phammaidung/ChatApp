@@ -1,16 +1,17 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class UserItem extends StatelessWidget {
-  const UserItem(
-      {super.key,
-      required this.userImg,
-      required this.username,
-      required this.openChatMessages});
+  const UserItem({
+    super.key,
+    required this.userImg,
+    required this.username,
+    required this.openChatMessages,
+    //required this.currentMsg,
+  });
 
   final String userImg;
   final String username;
-  //final String currentMsg;
+  //final String? currentMsg;
   final void Function() openChatMessages;
 
   @override
@@ -22,7 +23,7 @@ class UserItem extends StatelessWidget {
         backgroundColor: Theme.of(context).colorScheme.primary.withAlpha(180),
       ),
       title: Text(username),
-      //subtitle: Text('curMsg'),
+      //subtitle: Text(currentMsg ?? ''),
       onTap: openChatMessages,
     );
   }

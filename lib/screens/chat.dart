@@ -1,13 +1,14 @@
-//import 'dart:math';
-
 import 'package:chat_app/widgets/chat_messages.dart';
 import 'package:chat_app/widgets/new_messages.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-//import 'package:firebase_messaging/firebase_messaging.dart';
+
 import 'package:flutter/material.dart';
 
 class ChatScreen extends StatefulWidget {
-  const ChatScreen({super.key});
+  const ChatScreen({super.key, required this.friendId, required this.roomId});
+
+  final String friendId;
+  final String roomId;
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -44,10 +45,17 @@ class _ChatScreenState extends State<ChatScreen> {
                 ))
           ],
         ),
-        body: const Column(
+        body: Column(
           children: [
-            Expanded(child: ChatMessages()),
-            NewMessages(),
+            Expanded(
+                child: ChatMessages(
+              friendId: widget.friendId,
+              roomId: widget.roomId,
+            )),
+            NewMessages(
+              friendId: widget.friendId,
+              roomId: widget.roomId,
+            ),
           ],
         ));
   }

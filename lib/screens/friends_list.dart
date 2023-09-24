@@ -1,19 +1,42 @@
+import 'package:chat_app/models/generate_room_id.dart';
 import 'package:chat_app/screens/chat.dart';
 import 'package:chat_app/widgets/user_item.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class FriendsListScreen extends StatelessWidget {
+class FriendsListScreen extends StatefulWidget {
   const FriendsListScreen({super.key});
+
+  @override
+  State<FriendsListScreen> createState() => _FriendsListScreenState();
+}
+
+class _FriendsListScreenState extends State<FriendsListScreen> {
+  // dynamic _roomData;
+  // @override
+  // void initState() {
+
+  //   _getDataFromChatRoom();
+  //   super.initState();
+  // }
+
+  // void _getDataFromChatRoom(List<String> usersId) async {
+  //   _roomData = FirebaseFirestore.instance
+  //       .collection('chat_room')
+  //       .doc()
+  //       .collection('chat').where('roomId', isEqualTo: generateRoomId(usersId));
+  // }
 
   @override
   Widget build(BuildContext context) {
     final authenticatedUser = FirebaseAuth.instance.currentUser!;
+
     return Scaffold(
         appBar: AppBar(
-          title: const Text('ChatBox'),
+          title: const Text('ChitChat'),
           actions: [
+            IconButton(onPressed: () {}, icon: Icon(Icons.group_add_outlined)),
             IconButton(
                 onPressed: () {
                   FirebaseAuth.instance.signOut();
@@ -46,12 +69,27 @@ class FriendsListScreen extends StatelessWidget {
             return ListView.builder(
                 itemCount: loadedUsers.length,
                 itemBuilder: (ctx, index) {
+                  final roomId = generateRoomId([
+                    authenticatedUser.uid,
+                    loadedUsers[index].data()['userId']
+                  ]);
+
+                  // final curMsg = FirebaseFirestore.instance
+                  //     .collection('chat_room')
+                  //     .doc(roomId)
+                  //     .collection('chat')
+                  //     .get();
+
                   return UserItem(
                     userImg: loadedUsers[index].data()['image_url'],
                     username: loadedUsers[index].data()['username'],
+                    //currentMsg: ,
                     openChatMessages: () {
                       Navigator.of(context).push(MaterialPageRoute(
-                          builder: (ctx) => const ChatScreen()));
+                          builder: (ctx) => ChatScreen(
+                                friendId: loadedUsers[index].data()['userId'],
+                                roomId: roomId,
+                              )));
                     },
                   );
                 });
