@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:chat_app/widgets/user_image_picker.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 
@@ -28,6 +29,21 @@ class _AuthScreenState extends State<AuthScreen> {
 
   var _isAuthenticating = false;
   var _isVisiblePassword = true;
+  var _deviceToken;
+
+  void getDeviceToken() async {
+    final fcm = FirebaseMessaging.instance;
+
+    await fcm.requestPermission();
+
+    _deviceToken = await fcm.getToken();
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getDeviceToken();
+  }
 
   void _submit() async {
     final isValid = _formKey.currentState!.validate();
@@ -65,6 +81,7 @@ class _AuthScreenState extends State<AuthScreen> {
           'username': _enteredUsername,
           'email': _enteredEmail,
           'image_url': imageUrl,
+          'deviceToken': _deviceToken
         });
       }
     } on FirebaseAuthException catch (error) {

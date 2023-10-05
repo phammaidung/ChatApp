@@ -1,7 +1,7 @@
 import 'package:chat_app/widgets/chat_messages.dart';
 import 'package:chat_app/widgets/new_messages.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
+//import 'package:firebase_messaging/firebase_messaging.dart';
 
 import 'package:flutter/material.dart';
 
@@ -16,21 +16,21 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
-  void setupPushNotification() async {
-    final fcm = FirebaseMessaging.instance;
+  // void setupPushNotification() async {
+  //   final fcm = FirebaseMessaging.instance;
 
-    await fcm.requestPermission();
+  //   await fcm.requestPermission();
 
-    final token = await fcm.getToken();
-    print(token);
+  //   final token = await fcm.getToken();
+  //   print(token);
 
-    fcm.subscribeToTopic('chat');
-  }
+  //   fcm.subscribeToTopic('chat');
+  // }
 
   @override
   void initState() {
     super.initState();
-    setupPushNotification();
+    //setupPushNotification();
   }
 
   @override
